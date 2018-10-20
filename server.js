@@ -1,6 +1,6 @@
 const net = require('net');
 const element = require('./elements')
-const PORT = process.env.PORT || 8080;
+const PORT =  8080;
 
 
 const statusMessage = {
@@ -14,55 +14,50 @@ const server = net.createServer((socketInstance) => {
 
   socketInstance.setEncoding('UTF8');
 
+  server.listen(8080, () => {
+    console.log('port 8080' + '\n');
+  })
+  
+  socketInstance.on('data', (chunk) => {
+    console.log('what is', chunk);
 
-  socketInstance.on('data', (chunk, sender) => {
-    console.log('what is', chunk); 
-  
-        let request = chunk.split("\r\n")[0].split(' ');
-        let requestMethod = request[0];
-        let requestURI = request[1];
-        let requestHTTPVersion = request[2];
-        console.log('powpowpow', request);
-        console.log('popopopopopop', requestMethod)
-        console.log('llllllllll', requestURI)
-        console.log('uuuuuuuuuuu', requestHTTPVersion)
-        // console.log('keyyyy', chunk);
-  
-        if (requestMethod === 'GET' || requestURI === '/') 
-         socketInstance.write(createrHeader(requestURI, requestHTTPVersion, statusMessage.good, element.index)) 
+    // console.log('request', request);
+    let request = chunk.split('\r\n');
+    let method = request[0].split(' ');
+    let wanted = method[1];
+    let versio = method[2];
+ 
+    if (wanted === '/' || wanted === '/index.html') {
+      socketInstance.write(createHeader(socketInstance, versio, statusMessage.good, element.index));
+    } else if (wanted === '/helium.html') {
+      socketInstance.write(createHeader(socketInstance, versio, statusMessage.good, element.helium));
+    } else if (wanted === '/hydrogen.html') {
+      socketInstance.write(createHeader(socketInstance, versio, statusMessage.good, element.hydrogen));
+    } else if (wanted === '/css/styles.css') {
+      socketInstance.write(createHeader(socketInstance, versio, statusMessage.good, element.css));
+    } else {
+      socketInstance.write(createHeader(socketInstance, versio, statusMessage.notFound, element._404));
+     
+    }
+    socketInstance.destroy();
+  })
 
-          //  chunk.write(createHeader(chunk, wanted2, statusMessage.good, element.index));
-         
-        // } else if (wanted === '/helium.html') {
-        //   sender.write(createHeader(sender, wanted2, statusMessage.good, element.helium));
-        // } else if (wanted === '/hydrogen.html') {
-        //   sender.write(createHeader(sender, wanted2, statusMessage.good, element.hydrogen));
-        // } else if (wanted === '/css/styles.css') {
-        //    sender.write(createHeader(sender, wanted2, statusMessage.good, element.css));
-        // } else {
-        //    sender.write(createHeader(sender, wanted2, statusMessage.notFound, element.fourohfour));
-        // }
-        // sender.destroy();
-    
-    
-  
-    function createHeader(socketInstance, version, status, source) {
-      return `${version} ${status}
+  function createHeader(socket, version, status, source) {
+    return `${version} ${status}
     status: ${version} ${status}
     server:${process.env.USER} ${process.env.TERM_PROGRAM} ${process.env.TERM_PROGRAM_VERSION}
     date: ${new Date()}
+
     ${source}`
-    
-    }
+
+  }
+
   socketInstance.on('end', () => {
     console.log('client disconnected')
+    
   })
 
-  // server.on('end', () => {
-  //   console.log('connection ended');
-  // });
 })
-}) 
 server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 })
