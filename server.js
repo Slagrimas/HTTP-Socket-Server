@@ -1,7 +1,6 @@
 const net = require('net');
 const element = require('./elements')
-const PORT =  8080;
-
+const PORT = 8080;
 
 const statusMessage = {
   good: `200 OK`,
@@ -14,10 +13,6 @@ const server = net.createServer((socketInstance) => {
 
   socketInstance.setEncoding('UTF8');
 
-  server.listen(8080, () => {
-    console.log('port 8080' + '\n');
-  })
-  
   socketInstance.on('data', (chunk) => {
     console.log('what is', chunk);
 
@@ -25,23 +20,22 @@ const server = net.createServer((socketInstance) => {
     let request = chunk.split('\r\n');
     let method = request[0].split(' ');
     let wanted = method[1];
-    let versio = method[2];
- 
+    let wantedTwo = method[2];
+   
+
     if (wanted === '/' || wanted === '/index.html') {
-      socketInstance.write(createHeader(socketInstance, versio, statusMessage.good, element.index));
+      socketInstance.write(createHeader(socketInstance, wantedTwo, statusMessage.good, element.index));
     } else if (wanted === '/helium.html') {
-      socketInstance.write(createHeader(socketInstance, versio, statusMessage.good, element.helium));
+      socketInstance.write(createHeader(socketInstance, wantedTwo, statusMessage.good, element.helium));
     } else if (wanted === '/hydrogen.html') {
-      socketInstance.write(createHeader(socketInstance, versio, statusMessage.good, element.hydrogen));
+      socketInstance.write(createHeader(socketInstance, wantedTwo, statusMessage.good, element.hydrogen));
     } else if (wanted === '/css/styles.css') {
-      socketInstance.write(createHeader(socketInstance, versio, statusMessage.good, element.css));
+      socketInstance.write(createHeader(socketInstance, wantedTwo, statusMessage.good, element.styles));
     } else {
-      socketInstance.write(createHeader(socketInstance, versio, statusMessage.notFound, element._404));
-     
+      socketInstance.write(createHeader(socketInstance, wantedTwo, statusMessage.notFound, element._404));
     }
     socketInstance.destroy();
   })
-
   function createHeader(socket, version, status, source) {
     return `${version} ${status}
     status: ${version} ${status}
@@ -54,7 +48,7 @@ const server = net.createServer((socketInstance) => {
 
   socketInstance.on('end', () => {
     console.log('client disconnected')
-    
+
   })
 
 })
