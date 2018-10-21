@@ -2,42 +2,18 @@ console.log('Drip To Hard');
 const net = require('net');
 const host = process.argv[2];
 const PORT = 80;
-
+console.log('HOSTTTT', host);
 const client = net.createConnection(PORT, host, () => {
   console.log('server is connected');
-  client.setEncoding('utf8');
+
 });
 
+const date = new Date().toUTCString();
+console.log(date);
+const variable = `GET / HTTP/1.1\n Date: ${date}\n Host: ${host}\n User-Agent: Mark XVI \r\n\r\n`;
+client.write(variable);
 
-  process.stdout.write(`Request made to ${PORT}`);
-   //grabs request from node command line
-  host((value, index) => {
-      console.log('this is the value', value)
-      console.log('this is the index', index)
-    //grabs .html or .css portion of command
-    let wantedFile = process.argv[2];
-    console.log('this is the wanted value', wantedFile);
-    //if argument doesn't exist, give instruction and end process
-    if (!wantedFile) {
-      console.log('this is help stuff', process.stdout.write(help/Usage))
-      process.exit();
-  
-    }
-
-    let indexOfHTML = wantedFile.indexOf('/');
-    let requestedHTML = wantedFile.substring(indexOfHTML, wantedFile.length);
-    let host = wantedFile.substring(0, indexOfHTML);
-    //writes to server in request header format
-  //  sendRequest(requestedHTML, host);
-  })
-  client.destroy();
-
-client.on('data', (request) => {
-  console.log(request);
-})
-process.stdin.pipe(client);
-
-client.on('error', () => {
-  process.stdout.write(`\nTerminating connection`);
-  process.exit();
+client.on('data', (returned) => {
+  console.log('this is returned', returned.toString())
+  // process.stdout.write(returned.toString());
 });
