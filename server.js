@@ -35,7 +35,7 @@ const server = net.createServer((socketInstance) => {
       socketInstance.write(createHeader(socketInstance, wantedTwo, statusMessage.notFound, element._404));
 
     }
-    
+
     socketInstance.destroy();
   })
   function createHeader(socket, version, status, source) {
